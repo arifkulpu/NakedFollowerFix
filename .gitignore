@@ -1,0 +1,25 @@
+# Build and temporary files
+build/
+bin/
+obj/
+out/
+.vs/
+.vscode/
+
+# Vcpkg
+vcpkg_installed/
+vcpkg/
+
+# User-specific or sensitive
+*.user
+*.suo
+*.log
+NakedFollowerFix_STATUS.txt
+NakedFollowerFix_START.txt
+
+# Generated executable/dll in wrong places
+*.dll
+*.exe
+*.pdb
+!src/*.cpp
+!src/*.h
