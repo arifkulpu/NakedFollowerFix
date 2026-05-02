@@ -57,13 +57,23 @@ bool NakedFixManager::IsUniqueCustomNPC(RE::Actor* actor) {
     auto base = actor->GetActorBase();
     if (!base) return false;
 
-    // 1. ADIM: Vanilla (Orijinal oyun) karakterlerini filtrele.
-    uint32_t pluginIndex = (base->GetFormID() >> 24);
-    if (pluginIndex < 0x05) {
+    auto race = actor->GetRace();
+    if (!race) return false;
+
+    // 1. ADIM: Plugin indekslerini kontrol et.
+    uint32_t basePluginIndex = (base->GetFormID() >> 24);
+    uint32_t racePluginIndex = (race->GetFormID() >> 24);
+
+    // Eğer ActorBase VEYA Race bir moddan geliyorsa devam et.
+    // 0x05 ve sonrası modları temsil eder (00:Skyrim, 01:Update, 02:DG, 03:HF, 04:DB).
+    bool isModAddedActor = (basePluginIndex >= 0x05);
+    bool isModAddedRace = (racePluginIndex >= 0x05);
+
+    if (!isModAddedActor && !isModAddedRace) {
         return false; 
     }
 
-    // 2. ADIM: Sadece insansi takipcilere odaklan.
+    // 2. ADIM: Sadece insansi karakterlere odaklan.
     // Iskelet, Draugr, Hayalet, Daedra ve diger canavarlari kesinlikle disla.
     static const std::vector<std::string_view> blacklist = {
         "ActorTypeAnimal", "ActorTypeCreature", "ActorTypeUndead",
@@ -72,7 +82,7 @@ bool NakedFixManager::IsUniqueCustomNPC(RE::Actor* actor) {
     };
 
     for (const auto& keyword : blacklist) {
-        if (base->HasKeywordString(keyword)) {
+        if (base->HasKeywordString(keyword) || race->HasKeywordString(keyword)) {
             return false;
         }
     }

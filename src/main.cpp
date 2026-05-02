@@ -79,11 +79,11 @@ namespace
 
 extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version = []() {
     SKSE::PluginVersionData v;
-    v.PluginVersion(1);
+    v.PluginVersion({ 1, 4, 0 });
     v.PluginName("NakedFollowerFix");
     v.AuthorName("Developer");
     v.UsesAddressLibrary(true);
-    v.UsesStructsPost629(true);
+    v.CompatibleVersions({ SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_LATEST });
     return v;
 }();
 
@@ -93,7 +93,7 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadIn
     testFile.close();
 
     InitializeLog();
-    SKSE::log::info("NakedFollowerFix 1.3 yukleniyor...");
+    SKSE::log::info("NakedFollowerFix 1.4 (SE/AE) yukleniyor...");
 
     SKSE::Init(a_skse);
 

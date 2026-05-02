@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 set(VCPKG_TARGET_TRIPLET "x64-windows-static-md" CACHE STRING "")
 
-project(NakedFollowerFix VERSION 1.0.0)
+project(NakedFollowerFix VERSION 1.4.0)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -31,7 +31,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Version definitions for Next Gen
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    SKSE_SUPPORT_SSE
+    SKYRIM_SUPPORT_AE
+    SKYRIM_SUPPORT_SE
 )
 
 if(MSVC)
