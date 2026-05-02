@@ -26,6 +26,9 @@ RE::BSEventNotifyControl NakedFixManager::ProcessEvent(const RE::TESObjectLoaded
             auto actor = tObj->As<RE::Actor>();
             if (actor && actor->Is3DLoaded()) {
                 if (IsUniqueCustomNPC(actor)) {
+                    if (IsInAnimationScene(actor)) {
+                        return RE::BSEventNotifyControl::kContinue;
+                    }
                     if (IsNaked(actor)) {
                         EquipRandomOutfit(actor);
                     }
@@ -43,6 +46,7 @@ void NakedFixManager::CheckLoadedActors() {
     for (auto& handle : processList->highActorHandles) {
         if (auto actor = handle.get()) {
             if (IsUniqueCustomNPC(actor.get())) {
+                if (IsInAnimationScene(actor.get())) continue;
                 if (IsNaked(actor.get())) {
                     EquipRandomOutfit(actor.get());
                 }
@@ -90,6 +94,28 @@ bool NakedFixManager::IsUniqueCustomNPC(RE::Actor* actor) {
     return true;
 }
 
+bool NakedFixManager::IsInAnimationScene(RE::Actor* actor) {
+    if (!actor) return false;
+
+    // OStim Check
+    int oActive = 0;
+    if (actor->GetGraphVariableInt("OActive", oActive) && oActive > 0) {
+        return true;
+    }
+
+    // SexLab Check
+    if (actor->HasKeywordString("SexLabActive")) {
+        return true;
+    }
+
+    // General "Animating" flag check (sometimes used by other frameworks)
+    if (actor->HasKeywordString("AnimatingMain") || actor->HasKeywordString("IsAnimating")) {
+        return true;
+    }
+
+    return false;
+}
+
 bool NakedFixManager::IsNaked(RE::Actor* actor) {
     if (!actor) return false;
     
@@ -120,7 +146,7 @@ void NakedFixManager::EquipRandomOutfit(RE::Actor* actor) {
             if (!actor || !actor->Is3DLoaded() || actor->IsDead()) return;
 
             // KRITIK: Islem baslamadan hemen once bir kez daha kontrol et.
-            if (!IsNaked(actor)) {
+            if (IsInAnimationScene(actor) || !IsNaked(actor)) {
                 return;
             }
 

@@ -79,26 +79,36 @@ namespace
 
 extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version = []() {
     SKSE::PluginVersionData v;
-    v.PluginVersion({ 1, 4, 0 });
+    v.PluginVersion({ 1, 4, 1 });
     v.PluginName("NakedFollowerFix");
     v.AuthorName("Developer");
     v.UsesAddressLibrary(true);
-    v.CompatibleVersions({ SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_LATEST });
+    v.UsesStructsPost629(true);
+    v.CompatibleVersions({ 
+        SKSE::RUNTIME_SSE_1_5_97, 
+        SKSE::RUNTIME_SSE_1_6_640, 
+        REL::Version{ 1, 6, 1130, 0 }, 
+        REL::Version{ 1, 6, 1170, 0 } 
+    });
     return v;
 }();
 
 extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse) {
-    std::ofstream testFile("NakedFollowerFix_STATUS.txt");
-    testFile << "Mod is fully active and Hooking Console..." << std::endl;
-    testFile.close();
-
     InitializeLog();
-    SKSE::log::info("NakedFollowerFix 1.4 (SE/AE) yukleniyor...");
+    
+    auto runtimeVersion = a_skse->RuntimeVersion();
+    SKSE::log::info("NakedFollowerFix 1.4.1 (SE/AE) yukleniyor...");
+    SKSE::log::info("Tespit edilen oyun surumu: {}", runtimeVersion.string());
+
+    std::ofstream testFile("NakedFollowerFix_STATUS.txt");
+    testFile << "Mod is fully active. Game Version: " << runtimeVersion.string() << std::endl;
+    testFile.close();
 
     SKSE::Init(a_skse);
 
     auto messaging = SKSE::GetMessagingInterface();
     if (!messaging || !messaging->RegisterListener(OnMessage)) {
+        SKSE::log::error("Messaging interface kaydi basarisiz!");
         return false;
     }
 

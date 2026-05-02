@@ -21,6 +21,7 @@ private:
     NakedFixManager& operator=(const NakedFixManager&) = delete;
 
     bool IsUniqueCustomNPC(RE::Actor* actor);
+    bool IsInAnimationScene(RE::Actor* actor);
     bool IsNaked(RE::Actor* actor);
     void EquipRandomOutfit(RE::Actor* actor);
 };
